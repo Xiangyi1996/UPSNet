@@ -19,15 +19,17 @@
 
 cd data/cityscapes
 
-# if [ ! -d images ]; then
-#     mkdir images
-#     cp leftImg8bit/*/*/*.png images
-# fi
+if [ ! -d images ]; then
+    mkdir images
+    cp leftImg8bit/*/*/*.png images
+fi
 
 
 if [ ! -d labels ]; then
     mkdir labels
     cp gtFine/*/*/*labelTrainIds.png labels
+    # rename gtFine/train/*/*labelIds.png gtFine/train/*/*labelTrainIds.png
+    # cp gtFine/train/*/*labelTrainIds.pn labels
 fi
 
 # if [ ! -d panoptic ]; then

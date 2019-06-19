@@ -28,6 +28,7 @@ import torch.backends.cudnn as cudnn
 import tensorboardX
 import cv2
 import torch.utils.data.distributed as distributed
+import ipdb
 
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -40,7 +41,13 @@ from lib.utils.logging import create_logger
 
 args = parse_args()
 
-if config.train.use_horovod:
+if config.train.use_horovod: #
+    '''
+    Distributed training framework Horovod.
+    Efficient inter-GPU communication via ring reduction and requires
+    only a few lines of modification to user code, enabling faster, easier distributed
+    training in TensorFlow.
+    '''
     import horovod.torch as hvd
     from horovod.torch.mpi_ops import allreduce_async
     hvd.init()
@@ -50,7 +57,8 @@ is_master = (not config.train.use_horovod) or hvd.rank() == 0
 
 if is_master:
     logger, final_output_path = create_logger(config.output_path, args.cfg, config.dataset.image_set)
-    writer = tensorboardX.SummaryWriter(log_dir=os.path.join(config.output_path, 'tensorboard',
+    #import ipdb;ipdb.set_trace()
+    writer = tensorboardX.SummaryWriter(os.path.join(config.output_path, 'tensorboard',
                                                              os.path.basename(args.cfg).split('.')[0],
                                                              '_'.join(config.dataset.image_set.split('+')),
                                                              time.strftime('%Y-%m-%d-%H-%M')))
@@ -103,12 +111,14 @@ def adjust_learning_rate(optimizer, iter, config):
         return lr_poly(config.train.lr, iter, config.train.max_iteration, config.train.warmup_iteration)
 
 def upsnet_train():
-
+    debug = 0
+    if debug == 1:
+        ipdb.set_trace()
     if is_master:
-        logger.info('training config:{}\n'.format(pprint.pformat(config)))
+        logger.info('\ntraining config:{}\n'.format(pprint.pformat(config)))
     gpus = [torch.device('cuda', int(_)) for _ in config.gpus.split(',')]
     num_replica = hvd.size() if config.train.use_horovod else len(gpus)
-    num_gpus = 1 if config.train.use_horovod else len(gpus)
+    num_gpus = 1 if config.train.use_horovod else len(gpus) #len(gpus) = not use inter-gpus
 
     # create models
     train_model = eval(config.symbol)().cuda()
@@ -176,9 +186,11 @@ def upsnet_train():
         batch_end_callback[0](0, 0)
 
     train_model.eval()
-
+    debug = 1
+    if debug == 1:
+        ipdb.set_trace()
     # start training
-    while curr_iter < config.train.max_iteration:
+    while curr_iter < config.train.max_iteration: #48000
         if config.train.use_horovod:
             train_sampler.set_epoch(curr_iter)
 
@@ -250,7 +262,10 @@ def upsnet_train():
                         torch.save(optimizer.state_dict(), os.path.join(final_output_path, config.model_prefix+str(curr_iter)+'.state.pth'))
         else:
             inner_iter = 0
+            # Todo Debug
             train_iterator = train_loader.__iter__()
+
+
             while inner_iter + num_gpus <= len(train_loader):
                 batch = []
                 for gpu_id in gpus:

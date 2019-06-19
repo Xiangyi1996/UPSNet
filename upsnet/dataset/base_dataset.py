@@ -35,7 +35,7 @@ from upsnet.config.config import config
 from upsnet.rpn.assign_anchor import add_rpn_blobs
 from upsnet.bbox import bbox_transform
 from upsnet.bbox.sample_rois import sample_rois
-import networkx as nx
+#import networkx as nx
 from lib.utils.logging import logger
 
 import pycocotools.mask as mask_util

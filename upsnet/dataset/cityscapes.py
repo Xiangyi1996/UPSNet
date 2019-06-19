@@ -35,6 +35,7 @@ from upsnet.rpn.assign_anchor import add_rpn_blobs
 from upsnet.bbox.sample_rois import sample_rois
 from lib.utils.logging import logger
 import pycocotools.mask as mask_util
+import ipdb
 
 class Cityscapes(BaseDataset):
 
@@ -116,6 +117,9 @@ class Cityscapes(BaseDataset):
 
     def __getitem__(self, index):
         blob = defaultdict(list)
+        debug =0
+        if debug == 1:
+            ipdb.set_trace()
         im_blob, im_scales = self.get_image_blob([self.roidb[index]])
         if config.network.has_rpn:
             if self.phase != 'test':
@@ -208,6 +212,7 @@ class Cityscapes(BaseDataset):
             )
         processed_ims = []
         im_scales = []
+        import ipdb;ipdb.set_trace()
         for i in range(num_images):
             im = cv2.imread(roidb[i]['image'])
             assert im is not None, \

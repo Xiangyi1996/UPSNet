@@ -17,7 +17,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-import networkx as nx
+#import networkx as nx
 from scipy.optimize import linear_sum_assignment
 import matplotlib
 import matplotlib.pyplot

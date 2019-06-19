@@ -19,7 +19,7 @@ from easydict import EasyDict as edict
 
 config = edict()
 config.debug_mode = False
-# config.output_path = ''
+config.output_path = ' '
 # config.model_prefix = ''
 # config.symbol = ''
 # config.gpus = ''
