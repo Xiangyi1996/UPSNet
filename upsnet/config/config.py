@@ -85,7 +85,7 @@ config.dataset = edict()
 # training related params
 config.train = edict()
 
-config.train.use_horovod = False
+config.train.use_horovod = True
 config.train.lr_schedule = 'step'
 config.train.flip = True
 config.train.shuffle = True

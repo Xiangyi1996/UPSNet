@@ -44,7 +44,8 @@ def _check_balance(device_ids):
         return
 
 class DataParallel(Module):
-    r"""Implements data parallelism at the module level.
+    """
+    Implements data parallelism at the module level.
 
     This container parallelizes the application of the given module by
     splitting the input across the specified devices by chunking in the batch

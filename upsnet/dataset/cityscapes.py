@@ -212,8 +212,11 @@ class Cityscapes(BaseDataset):
             )
         processed_ims = []
         im_scales = []
-        import ipdb;ipdb.set_trace()
+
         for i in range(num_images):
+            # import ipdb;
+            # ipdb.set_trace()
+            #print(i)
             im = cv2.imread(roidb[i]['image'])
             assert im is not None, \
                 'Failed to read image \'{}\''.format(roidb[i]['image'])

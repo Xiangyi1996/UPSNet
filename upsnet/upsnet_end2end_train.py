@@ -40,7 +40,7 @@ from upsnet.config.parse_args import parse_args
 from lib.utils.logging import create_logger
 
 args = parse_args()
-
+#config.train.use_horovod = True
 if config.train.use_horovod: #
     '''
     Distributed training framework Horovod.
@@ -186,11 +186,12 @@ def upsnet_train():
         batch_end_callback[0](0, 0)
 
     train_model.eval()
-    debug = 1
+    debug = 0
     if debug == 1:
         ipdb.set_trace()
     # start training
     while curr_iter < config.train.max_iteration: #48000
+        print(curr_iter)
         if config.train.use_horovod:
             train_sampler.set_epoch(curr_iter)
 
@@ -263,19 +264,20 @@ def upsnet_train():
         else:
             inner_iter = 0
             # Todo Debug
-            train_iterator = train_loader.__iter__()
+            #train_iterator = train_loader.__iter__()
 
 
-            while inner_iter + num_gpus <= len(train_loader):
+            while inner_iter + num_gpus <= len(train_loader): #5930
                 batch = []
                 for gpu_id in gpus:
-                    data, label, _ = train_iterator.next()
+                    data, label, _ = train_loader.__iter__().next()
                     for k, v in data.items():
                         data[k] = v if not torch.is_tensor(v) else v.pin_memory().to(gpu_id, non_blocking=True)
                     for k, v in label.items():
                         label[k] = v if not torch.is_tensor(v) else v.pin_memory().to(gpu_id, non_blocking=True)
                     batch.append((data, label))
                     inner_iter += 1
+                #ipdb.set_trace()
                 lr = adjust_learning_rate(optimizer, curr_iter, config)
                 optimizer.zero_grad()
                 if config.train.use_horovod:
@@ -292,7 +294,7 @@ def upsnet_train():
                     loss = loss + output['mask_loss'].mean()
                 if config.network.has_fcn_head:
                     loss = loss + output['fcn_loss'].mean() * config.train.fcn_loss_weight
-                    if config.train.fcn_with_roi_loss:
+                    if config.train.fcn_with_roi_loss: #False
                         loss = loss + output['fcn_roi_loss'].mean() * config.train.fcn_loss_weight * 0.2
                 if config.network.has_panoptic_head:
                     loss = loss + output['panoptic_loss'].mean() * config.train.panoptic_loss_weight
@@ -302,7 +304,7 @@ def upsnet_train():
                 losses = []
                 losses.append(loss.item())
                 for l in metrics_name:
-                    losses.append(output[l].mean().item())
+                    losses.append(output[l].mean().item()) #sum up loss of every metrics
 
                 loss = losses[0]
                 if is_master:
@@ -333,7 +335,7 @@ def upsnet_train():
 
             while True:
                 try:
-                    train_iterator.next()
+                    train_loader.__iter__().next()
                 except:
                     break
 
