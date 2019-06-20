@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 #EXP = "upsnet_resnet50_cityscapes_4gpu"
 

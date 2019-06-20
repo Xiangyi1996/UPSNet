@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+
+
+cd data/cityscapes
+cp leftImg8bit/*/*/*.png images
 # Download devkit
 #git clone https://github.com/mcordts/cityscapesScripts lib/dataset_devkit/cityscapesScripts
 
@@ -17,7 +22,6 @@
 #     curl http://www.yuwenxiong.com/dataset/cityscapes/annotations/cityscapes_fine_val.json -o data/cityscapes/annotations/cityscapes_fine_val.json
 # fi
 
-cd data/cityscapes
 
 # if [ ! -d images ]; then
 #     mkdir images
@@ -25,10 +29,10 @@ cd data/cityscapes
 # fi
 
 
-if [ ! -d labels ]; then
-    mkdir labels
-    cp gtFine/*/*/*labelTrainIds.png labels
-fi
+#if [ ! -d labels ]; then
+#    mkdir labels_val
+#    cp gtFine/val/*/*labelTrainIds.png labels
+#fi
 
 # if [ ! -d panoptic ]; then
 #     curl http://www.yuwenxiong.com/dataset/cityscapes/annotations/panoptic.zip -o panoptic.zip
